@@ -3,8 +3,11 @@ package com.udacity
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.ContextCompat.getColor
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
@@ -19,22 +22,31 @@ class LoadingButton @JvmOverloads constructor(
 
     }
 
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        textAlign = Paint.Align.CENTER
+        textSize = 55.0f
+        typeface = Typeface.create("", Typeface.BOLD)
+        isAntiAlias = true
+    }
 
     init {
 
     }
 
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
+        drawButtonLayout(canvas)
+        drawButtonText(canvas)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val minw: Int = paddingLeft + paddingRight + suggestedMinimumWidth
         val w: Int = resolveSizeAndState(minw, widthMeasureSpec, 1)
         val h: Int = resolveSizeAndState(
-            MeasureSpec.getSize(w),
+            View.MeasureSpec.getSize(w),
             heightMeasureSpec,
             0
         )
@@ -43,4 +55,18 @@ class LoadingButton @JvmOverloads constructor(
         setMeasuredDimension(w, h)
     }
 
+    private fun drawButtonLayout(canvas: Canvas) {
+        paint.color = getColor(context, R.color.colorPrimary)
+        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
+    }
+
+    private fun drawButtonText(canvas: Canvas) {
+        paint.color = getColor(context, R.color.white)
+
+        // Calculate the center of the canvas
+        val xTextPos = (width / 2).toFloat()
+        val yTextPos = ((height / 2) - ((paint.descent() + paint.ascent()) / 2))
+
+        canvas.drawText(resources.getString(R.string.button_download), xTextPos, yTextPos, paint)
+    }
 }
