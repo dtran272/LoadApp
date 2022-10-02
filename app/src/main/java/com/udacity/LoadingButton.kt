@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.RectF
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
@@ -13,17 +14,20 @@ import androidx.core.content.ContextCompat.getColor
 import androidx.core.content.withStyledAttributes
 import kotlin.properties.Delegates
 
-private const val DEFAULT_LOAD_TIME_DURATION = 10000L
+private const val DEFAULT_LOAD_TIME_DURATION = 30000L
+private const val FAST_LOAD_TIME_DURATION = 500L
 
 class LoadingButton @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
     private var widthSize = 0f
     private var heightSize = 0f
+    private val circleRadius = resources.getDimension(R.dimen.circle_radius)
 
     private var valueAnimator = ValueAnimator()
 
-    private var progressStatus: Int = 0
+    private var completeLoad = true
+    private var progressStatus: Float = 0.0f
     private var loadingColor = 0
     private var unfilledColor = 0
     private var downloadText = ""
@@ -51,7 +55,7 @@ class LoadingButton @JvmOverloads constructor(
             loadingColor = getColor(R.styleable.LoadingButton_loadingColor, 0)
             loadingText = getString(R.styleable.LoadingButton_loadingText).toString()
             downloadText = getString(R.styleable.LoadingButton_text).toString()
-            progressStatus = getInt(R.styleable.LoadingButton_progress, 0)
+            progressStatus = getFloat(R.styleable.LoadingButton_progress, 0.0f)
         }
 
         buttonState = ButtonState.Completed
@@ -84,29 +88,37 @@ class LoadingButton @JvmOverloads constructor(
 
     fun onStartDownload() {
         buttonState = ButtonState.Loading
-        animateProgress(100, true)
+        completeLoad = false
+        animateProgress(1f, true)
     }
 
     fun onReset() {
         if (valueAnimator.isRunning) {
-            valueAnimator.currentPlayTime = DEFAULT_LOAD_TIME_DURATION - 500L
+            valueAnimator.cancel()
+            valueAnimator.duration = FAST_LOAD_TIME_DURATION
+            valueAnimator.start()
+            completeLoad = true
         }
     }
 
-    private fun animateProgress(progress: Int, animate: Boolean) {
+    private fun animateProgress(progress: Float, animate: Boolean) {
         if (animate) {
-            valueAnimator = ValueAnimator.ofFloat(0f, 1f)
+            valueAnimator = ValueAnimator.ofFloat(0f, progress)
             valueAnimator.duration = DEFAULT_LOAD_TIME_DURATION
 
             valueAnimator.interpolator = DecelerateInterpolator()
             valueAnimator.addUpdateListener { animation ->
                 val interpolation = animation.animatedValue as Float
-                animateProgress((interpolation * progress).toInt(), false)
+                animateProgress((interpolation * progress * 100), false)
             }
 
             valueAnimator.doOnEnd {
+                if (!completeLoad) {
+                    return@doOnEnd
+                }
+
                 buttonState = ButtonState.Completed
-                progressStatus = 0
+                progressStatus = 0f
 
                 postInvalidate()
             }
@@ -122,7 +134,7 @@ class LoadingButton @JvmOverloads constructor(
 
     private fun setupButtonLayout(canvas: Canvas) {
         canvas.save()
-        drawLoadingProgress(canvas)
+        drawProgress(canvas)
         canvas.restore()
     }
 
@@ -132,16 +144,35 @@ class LoadingButton @JvmOverloads constructor(
         canvas.restore()
     }
 
-    private fun drawLoadingProgress(canvas: Canvas) {
+    private fun drawProgress(canvas: Canvas) {
+        drawRectangularProgressIndicator(canvas)
+        drawCircularProgressIndicator(canvas)
+    }
+
+    private fun drawRectangularProgressIndicator(canvas: Canvas) {
         val progressEndX = widthSize * progressStatus / 100f
 
-        // Draw the unfilled section
+        // Draw rectangle loading progress: unfilled portion
         paint.color = unfilledColor
         canvas.drawRect(progressEndX, 0f, widthSize, heightSize, paint)
 
-        // Draw the part of the button that's filled
+        // Draw rectangle loading progress: filled portion
         paint.color = loadingColor
         canvas.drawRect(0f, 0f, progressEndX, heightSize, paint)
+    }
+
+    private fun drawCircularProgressIndicator(canvas: Canvas) {
+        if (progressStatus == 0f) {
+            return
+        }
+
+        val startXPos = width * 0.75f
+        val startYPos = (height / 2).toFloat()
+
+        val rectangle = RectF(startXPos, startYPos - circleRadius / 2, startXPos + circleRadius, startYPos + circleRadius / 2)
+
+        paint.color = getColor(context, R.color.colorAccent)
+        canvas.drawArc(rectangle, 0f, (progressStatus / 100 * 360), true, paint)
     }
 
     private fun drawButtonStateText(canvas: Canvas) {

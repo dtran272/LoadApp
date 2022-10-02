@@ -61,7 +61,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:loadingColor="@color/colorPrimaryDark"
         app:loadingText="@string/button_loading"
-        app:progress="0"
+        app:progress="0.0"
         app:text="@string/button_download"
         app:unfilledColor="@color/colorPrimary" />
 
