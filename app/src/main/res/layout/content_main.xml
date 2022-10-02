@@ -24,27 +24,27 @@
         android:id="@+id/radioGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/downloadButton"
+        app:layout_constraintBottom_toTopOf="@id/loadingButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/downloadImage">
 
         <RadioButton
-            android:id="@+id/bumpTechButton"
+            android:id="@+id/bumpTechRadioButton"
             style="@style/radioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/glide_image_loading_library_by_bumptech" />
 
         <RadioButton
-            android:id="@+id/udacityButton"
+            android:id="@+id/udacityRadioButton"
             style="@style/radioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/loadapp_current_repository_by_udacity" />
 
         <RadioButton
-            android:id="@+id/squareButton"
+            android:id="@+id/squareRadioButton"
             style="@style/radioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,12 +52,17 @@
     </RadioGroup>
 
     <com.udacity.LoadingButton
-        android:id="@+id/downloadButton"
+        android:id="@+id/loadingButton"
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_margin="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:loadingColor="@color/colorPrimaryDark"
+        app:loadingText="@string/button_loading"
+        app:progress="0"
+        app:text="@string/button_download"
+        app:unfilledColor="@color/colorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
