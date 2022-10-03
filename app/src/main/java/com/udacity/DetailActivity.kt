@@ -37,9 +37,13 @@ class DetailActivity : AppCompatActivity() {
         if (isSuccess) {
             status.setTextColor(getColor(R.color.green))
             status.text = getString(R.string.success_text)
+
+            statusImage.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
         } else {
             status.setTextColor(getColor(R.color.red))
             status.text = getString(R.string.error_text)
+
+            statusImage.setImageResource(R.drawable.ic_baseline_error_outline_24)
         }
     }
 }
