@@ -34,21 +34,21 @@
             style="@style/radioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/glide_image_loading_library_by_bumptech" />
+            android:text="@string/button_glide" />
 
         <RadioButton
             android:id="@+id/udacityRadioButton"
             style="@style/radioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/loadapp_current_repository_by_udacity" />
+            android:text="@string/button_udacity" />
 
         <RadioButton
             android:id="@+id/squareRadioButton"
             style="@style/radioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/retrofit_type_safe_http_client_for_android_and_java_by_square_inc" />
+            android:text="@string/button_square" />
     </RadioGroup>
 
     <com.udacity.LoadingButton
